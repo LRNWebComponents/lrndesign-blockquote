@@ -1,0 +1,106 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`lrndesign-blockquote`
+A structured blockquote element
+
+@demo demo/index.html
+-->
+
+<dom-module id="lrndesign-blockquote">
+  <template>
+    <style>
+      :host {
+        display: block;
+        --lrndesign-blockquote-color: #585858;
+        --lrndesign-blockquote-cite: #3a3a3a;
+        --lrndesign-blockquote-background: #bfbfbf;
+        @apply(--lrndesign-blockquote);
+      }
+      blockquote {
+        font-size: 1.2rem;
+        font-style: italic;
+        margin: .25rem 0;
+        padding: 0 0 0 2.5rem;
+        line-height: 1.5;
+        position: relative;
+        color: var(--lrndesign-blockquote-color);
+      }
+      blockquote.decorate:before {
+        display: block;
+        font-family: Georgia, serif;
+        content: "\201C";
+        font-size: 5rem;
+        position: absolute;
+        left: -1.25rem;
+        top: -1.25rem;
+        color: var(--lrndesign-blockquote-color);
+      }
+      blockquote.background {
+        background-color: var(--lrndesign-blockquote-background);
+        padding: .5rem;
+        margin: .5rem;
+      }
+      blockquote.outset {
+        margin: .25rem -8rem .25rem -8rem;
+      }
+      blockquote cite {
+        color: var(--lrndesign-blockquote-cite);
+        font-size: .8rem;
+        display: block;
+        margin-top: .25rem;
+        text-align: right;
+        --blockquote-cite: {
+
+        }
+      }
+    </style>
+    <blockquote class$="{{generateClass(decorate, outset, background)}}">
+      {{quote}}
+      <cite>{{citation}}</cite>
+    </blockquote>
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'lrndesign-blockquote',
+
+      properties: {
+        quote: {
+          type: String,
+          value: '',
+        },
+        citation: {
+          type: String,
+          value: '',
+        },
+        decorate: {
+          type: Boolean,
+          value: false,
+        },
+        outset: {
+          type: Boolean,
+          value: false,
+        },
+        background: {
+          type: Boolean,
+          value: false,
+        },
+      },
+      generateClass: function(decorate, outset, background) {
+        var returnClass = '';
+        if (decorate) {
+          returnClass += ' decorate';
+        }
+        if (outset) {
+          returnClass += ' outset';
+        }
+        if (background) {
+          returnClass += ' background';
+        }
+        return returnClass;
+      }
+    });
+  </script>
+</dom-module>
