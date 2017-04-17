@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../hax-behaviors/hax-behaviors.html">
 
 <!--
 `lrndesign-blockquote`
@@ -56,8 +57,13 @@ A structured blockquote element
       }
     </style>
     <blockquote class$="{{generateClass(decorate, outset, background)}}">
-      {{quote}}
-      <cite>{{citation}}</cite>
+      <hax-editbar edit="{{edit}}"></hax-editbar>
+      <hax-editable edit="{{edit}}" type="html">
+        {{quote}}
+      </hax-editable>
+      <cite>
+        <hax-editable edit="{{edit}}" type="textfield">{{citation}}</hax-editable>
+      </cite>
     </blockquote>
   </template>
 
@@ -65,7 +71,7 @@ A structured blockquote element
     Polymer({
 
       is: 'lrndesign-blockquote',
-
+      behaviors: [HAXBehaviors.EditBehaviors],
       properties: {
         /**
          * quote to be presented
@@ -108,6 +114,9 @@ A structured blockquote element
           value: false,
         },
       },
+      /**
+       * generate a class based on the options provided
+       */
       generateClass: function(decorate, outset, background) {
         var returnClass = '';
         if (decorate) {
@@ -121,6 +130,9 @@ A structured blockquote element
         }
         return returnClass;
       },
+      /**
+       * Content demo.
+       */
       _demoInit: function() {
         this.quote = "Disrupt, innovate out of your job. Pay everything forward. Collapse local inefficiencies. Pay forward via analysis of process. Collapse larger inefficiencies... Collapse edge industries. Rinse, repeat in other areas.";
         this.citation = "btopro, July 26th 2011";
