@@ -41,7 +41,6 @@ A structured blockquote element
         position: absolute;
         left: -1.25rem;
         top: -1.25rem;
-        color: var(--lrndesign-blockquote-color);
       }
       blockquote.outset {
         margin: .25rem -8rem .25rem -8rem;
@@ -71,7 +70,7 @@ A structured blockquote element
         <hax-editable edit="{{edit}}" type="html">
           {{quote}}
         </hax-editable>
-        <cite>
+        <cite class$="{{textColor}}">
           <hax-editable edit="{{edit}}" type="textfield">{{citation}}</hax-editable>
         </cite>
       </blockquote>
@@ -89,7 +88,7 @@ A structured blockquote element
          */
         quote: {
           type: String,
-          value: '',
+          value: 'Fame is a vapor, popularity an accident; the only earthly certainty is oblivion.',
           reflectToAttribute: true,
           notify: true,
         },
@@ -99,7 +98,7 @@ A structured blockquote element
          */
         citation: {
           type: String,
-          value: '',
+          value: 'Mark Twain',
           reflectToAttribute: true,
           notify: true,
         },
