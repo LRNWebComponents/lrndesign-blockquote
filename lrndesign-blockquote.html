@@ -58,22 +58,22 @@ A structured blockquote element
         --primary-text-color: #FFFFFF;
       }
     </style>
-      <blockquote class$="{{generateClass(decorate, outset, color, textColor)}}">
-      <hax-editbar edit="{{edit}}">
-        <paper-swatch-picker id="itemcolor" color="{{colorCode}}"></paper-swatch-picker>
-        <paper-tooltip for="itemcolor">Background color</paper-tooltip>
-        <paper-swatch-picker id="textcolor" color="{{textColorCode}}"></paper-swatch-picker>
-        <paper-tooltip for="textcolor">Text color</paper-tooltip>
-        <paper-checkbox checked="{{decorate}}">Decorate</paper-checkbox>
-        <paper-checkbox checked="{{outset}}">Outset</paper-checkbox>
-      </hax-editbar>
-        <hax-editable edit="{{edit}}" type="html">
-          {{quote}}
-        </hax-editable>
-        <cite class$="{{textColor}}">
-          <hax-editable edit="{{edit}}" type="textfield">{{citation}}</hax-editable>
-        </cite>
-      </blockquote>
+    <hax-editbar edit="{{edit}}">
+      <paper-swatch-picker id="itemcolor" color="{{colorCode}}"></paper-swatch-picker>
+      <paper-tooltip for="itemcolor">Background color</paper-tooltip>
+      <paper-swatch-picker id="textcolor" color="{{textColorCode}}"></paper-swatch-picker>
+      <paper-tooltip for="textcolor">Text color</paper-tooltip>
+      <paper-checkbox checked="{{decorate}}">Decorate</paper-checkbox>
+      <paper-checkbox checked="{{outset}}">Outset</paper-checkbox>
+    </hax-editbar>
+    <blockquote class$="{{generateClass(decorate, outset, color, textColor)}}">
+      <hax-editable edit="{{edit}}" type="html">
+        {{quote}}
+      </hax-editable>
+      <cite class$="{{textColor}}">
+        <hax-editable edit="{{edit}}" type="textfield">{{citation}}</hax-editable>
+      </cite>
+    </blockquote>
   </template>
 
   <script>
