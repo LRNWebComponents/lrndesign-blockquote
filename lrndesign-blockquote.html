@@ -22,7 +22,7 @@ A structured blockquote element
         box-sizing: border-box;
         --lrndesign-blockquote-color: #585858;
         --lrndesign-blockquote-cite: #3a3a3a;
-        @apply(--lrndesign-blockfquote);
+        @apply(--lrndesign-blockquote);
       }
       blockquote {
         font-size: 1.2rem;
@@ -57,8 +57,11 @@ A structured blockquote element
       paper-checkbox {
         --primary-text-color: #FFFFFF;
       }
+      :host[show-hax] hax-editbar {
+        display: block;
+      }
     </style>
-    <hax-editbar edit="{{edit}}">
+    <hax-editbar show-hax="{{showHax}}" edit="{{edit}}">
       <paper-swatch-picker id="itemcolor" color="{{colorCode}}"></paper-swatch-picker>
       <paper-tooltip for="itemcolor">Background color</paper-tooltip>
       <paper-swatch-picker id="textcolor" color="{{textColorCode}}"></paper-swatch-picker>
