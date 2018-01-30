@@ -1,10 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../hax-behaviors/hax-behaviors.html">
-<link rel="import" href="../paper-tooltip/paper-tooltip.html">
-<link rel="import" href="../paper-swatch-picker/paper-swatch-picker.html">
-<link rel="import" href="../paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../materializecss-styles/materializecss-styles.html">
-
+<link rel="import" href="../hax-body-behaviors/hax-body-behaviors.html">
+<link rel="import" href="../schema-behaviors/schema-behaviors.html">
+<link rel="import" href="../a11y-behaviors/a11y-behaviors.html">
+<link rel="import" href="../paper-styles/shadow.html">
 <!--
 `lrndesign-blockquote`
 A structured blockquote element
@@ -27,8 +26,8 @@ A structured blockquote element
       blockquote {
         font-size: 1.2rem;
         font-style: italic;
-        margin: .25rem 0;
-        padding: 0 0 0 2.5rem;
+        margin: .25em 0;
+        padding: 1.5em 1.5em 1.5em 2.5em;
         line-height: 1.5;
         position: relative;
         color: var(--lrndesign-blockquote-color);
@@ -45,36 +44,25 @@ A structured blockquote element
       blockquote.outset {
         margin: .25rem -8rem .25rem -8rem;
       }
-      blockquote cite {
+      cite {
         color: var(--lrndesign-blockquote-cite);
         font-size: .8rem;
         display: block;
         margin-top: .25rem;
         text-align: right;
-        --blockquote-cite: {
-        }
       }
-      paper-checkbox {
-        --primary-text-color: #FFFFFF;
-      }
-      :host[show-hax] hax-editbar {
-        display: block;
-      }
+      :host[depth="1"] blockquote { @apply --shadow-elevation-2dp; }
+      :host[depth="2"] blockquote { @apply --shadow-elevation-3dp; }
+      :host[depth="3"] blockquote { @apply --shadow-elevation-4dp; }
+      :host[depth="4"] blockquote { @apply --shadow-elevation-6dp; }
+      :host[depth="5"] blockquote { @apply --shadow-elevation-8dp; }
+      :host[depth="6"] blockquote { @apply --shadow-elevation-12dp; }
+      :host[depth="7"] blockquote { @apply --shadow-elevation-16dp; }
     </style>
-    <hax-editbar show-hax="{{showHax}}" edit="{{edit}}">
-      <paper-swatch-picker id="itemcolor" color="{{colorCode}}"></paper-swatch-picker>
-      <paper-tooltip for="itemcolor">Background color</paper-tooltip>
-      <paper-swatch-picker id="textcolor" color="{{textColorCode}}"></paper-swatch-picker>
-      <paper-tooltip for="textcolor">Text color</paper-tooltip>
-      <paper-checkbox checked="{{decorate}}">Decorate</paper-checkbox>
-      <paper-checkbox checked="{{outset}}">Outset</paper-checkbox>
-    </hax-editbar>
-    <blockquote class$="{{generateClass(decorate, outset, color, textColor)}}">
-      <hax-editable edit="{{edit}}" type="html">
-        {{quote}}
-      </hax-editable>
-      <cite class$="{{textColor}}">
-        <hax-editable edit="{{edit}}" type="textfield">{{citation}}</hax-editable>
+    <blockquote class$="[[generateClass(decorate, outset, color, textColor)]]">
+        [[quote]]
+      <cite class$="[[textColor]]">
+        [[citation]]
       </cite>
     </blockquote>
   </template>
@@ -83,27 +71,32 @@ A structured blockquote element
     Polymer({
 
       is: 'lrndesign-blockquote',
-      behaviors: [HAXBehaviors.EditBehaviors, MaterializeCSSBehaviors.ColorBehaviors],
+      behaviors: [
+        HAXBehaviors.PropertiesBehaviors,
+        MaterializeCSSBehaviors.ColorBehaviors,
+        SchemaBehaviors.Schema,
+        A11yBehaviors.A11y,
+      ],
       properties: {
         /**
          * quote to be presented
-         * @type {Object}
          */
         quote: {
           type: String,
-          value: 'Fame is a vapor, popularity an accident; the only earthly certainty is oblivion.',
-          reflectToAttribute: true,
-          notify: true,
         },
         /**
          * Source being cited
-         * @type {Object}
          */
         citation: {
           type: String,
-          value: 'Mark Twain',
+        },
+        /**
+         * Depth styling
+         */
+        depth: {
+          type: String,
+          value: "0",
           reflectToAttribute: true,
-          notify: true,
         },
         /**
          * Place " glyph decorator
@@ -112,7 +105,6 @@ A structured blockquote element
           type: Boolean,
           value: false,
           reflectToAttribute: true,
-          notify: true,
         },
         /**
          * Explode out of boundary container intentionally
@@ -121,57 +113,174 @@ A structured blockquote element
           type: Boolean,
           value: false,
           reflectToAttribute: true,
-          notify: true,
         },
         /**
          * Color code
          */
         colorCode: {
           type: String,
-          observer: '_colorChange',
+          value: '#fff9c4',
+          observer: '_bgColorChanged',
         },
         /**
          * Color class
          */
         color: {
           type: String,
-          value: 'yellow lighten-4',
-          reflectToAttribute: true,
-          notify: true,
+          computed: '_computeColorClass(colorCode)'
         },
         /**
          * Text color code
          */
         textColorCode: {
           type: String,
-          observer: '_textColorChange',
+          value: '#000000',
         },
         /**
          * Text color class
          */
         textColor: {
           type: String,
-          value: 'black-text',
-          reflectToAttribute: true,
-          notify: true,
+          computed: '_computeColorClass(textColorCode)',
         },
       },
       /**
-       * Notice the color change and shift it over to the class name.
+       * Attached.
        */
-      _colorChange: function() {
-        if (this.colorCode.substring(0, 1) == '#') {
-          this.color = this._colorTransform(this.colorCode, '', '');
+      attached: function() {
+        // Establish hax properties if they exist
+        let props = {
+          'canScale': false,
+          'canPosition': false,
+          'canEditSource': false,
+          'gizmo': {
+            'title': 'Fancy quote',
+            'description': 'Presents a famous quote with additional design options.',
+            'icon': 'editor:format-quote',
+            'color': 'grey',
+            'groups': ['Content', 'Presentation'],
+            'handles': [
+              {
+                'type': 'content',
+                'caption': 'quote',
+                'title': 'citation',
+                'description': 'quote',
+                'citation': 'citation',
+                'color': 'colorCode'
+              }
+            ],
+            'meta': {
+              'author': 'LRNWebComponents'
+            }
+          },
+          'settings': {
+            'quick': [
+              {
+                'property': 'colorCode',
+                'title': 'Background color',
+                'description': 'Select the background color for the quote.',
+                'inputMethod': 'colorpicker',
+                'icon': 'editor:format-color-fill',
+              },
+              {
+                'property': 'outset',
+                'title': 'Outset',
+                'description': 'Should this expand beyond it\'s container by design?',
+                'inputMethod': 'boolean',
+                'icon': 'editor:border-outer',
+              },
+              {
+                'property': 'decorate',
+                'title': 'Glyph decoration',
+                'description': 'Add a fancy " quotation mark off the left side.',
+                'inputMethod': 'boolean',
+                'icon': 'editor:format-quote',
+              }
+            ],
+            'configure': [
+              {
+                'property': 'quote',
+                'title': 'Quote',
+                'description': 'Quoted text',
+                'inputMethod': 'textfield',
+                'icon': 'editor:format-quote',
+                'required': true,
+                'validationType': 'text',
+              },
+              {
+                'property': 'citation',
+                'title': 'Citation',
+                'description': '',
+                'inputMethod': 'textfield',
+                'icon': 'editor:short-text',
+                'required': false,
+                'validationType': 'text',
+              },
+              {
+                'property': 'outset',
+                'title': 'Outset',
+                'description': 'Should this expand beyond it\'s container by design?',
+                'inputMethod': 'boolean',
+                'icon': 'editor:border-outer',
+              },
+              {
+                'property': 'decorate',
+                'title': 'Glyph decoration',
+                'description': 'Add a fancy " quotation mark off the left side.',
+                'inputMethod': 'boolean',
+                'icon': 'editor:format-quote',
+              },
+              {
+                'property': 'colorCode',
+                'title': 'Background color',
+                'description': 'Select the background color for the quote.',
+                'inputMethod': 'colorpicker',
+                'icon': 'editor:format-color-fill',
+              },
+              {
+                'property': 'depth',
+                'title': 'Shadow depth',
+                'description': 'Select the background color for the quote.',
+                'inputMethod': 'select',
+                'icon': 'maps:layers',
+                'options': {
+                  '0': 'none',
+                  '1': 'Level 1',
+                  '2': 'Level 2',
+                  '3': 'Level 3',
+                  '4': 'Level 4',
+                  '5': 'Level 5',
+                  '6': 'Level 6',
+                  '7': 'Level 7'
+                },
+              }
+            ],
+            'advanced': []
+          }
+        };
+        this.setHaxProperties(props);
+      },
+      /**
+       * Notice background color has changed.
+       */
+      _bgColorChanged: function(newValue, oldValue) {
+        if (typeof newValue !== typeof undefined && newValue != null) {
+          // sees if there's enough contrast and adjusts them accordingly
+          this.computeTextPropContrast('textColorCode', 'colorCode');
         }
       },
       /**
-       * Text color change and shift it over to the class name.
+       * Make class from color value
        */
-      _textColorChange: function(value, e) {
-        console.log(value);
-        console.log(e);
-        if (this.textColorCode.substring(0, 1) == '#') {
-          this.textColor = this._colorTransform(this.textColorCode, '-text', 'text-');
+      _computeColorClass: function(color) {
+        if (color != null && color.toLowerCase() == '#ffffff') {
+          return 'white-text';
+        }
+        else if (color != null && color == '#000000') {
+          return 'black-text';
+        }
+        else if (color != null && color.substring(0, 1) == '#') {
+          return this._colorTransform(color.toLowerCase(), '', '');
         }
       },
       /**
@@ -189,14 +298,6 @@ A structured blockquote element
         returnClass += ' ' + textColor + ' ' + color;
         return returnClass;
       },
-      /**
-       * Content demo.
-       */
-      _demoInit: function() {
-        this.quote = "Disrupt, innovate out of your job. Pay everything forward. Collapse local inefficiencies. Pay forward via analysis of process. Collapse larger inefficiencies... Collapse edge industries. Rinse, repeat in other areas.";
-        this.citation = "btopro, July 26th 2011";
-        this.decorate = true;
-      }
     });
   </script>
 </dom-module>
