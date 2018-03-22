@@ -56,11 +56,9 @@ A structured blockquote element
       :host[depth="3"] blockquote { @apply --shadow-elevation-4dp; }
       :host[depth="4"] blockquote { @apply --shadow-elevation-6dp; }
       :host[depth="5"] blockquote { @apply --shadow-elevation-8dp; }
-      :host[depth="6"] blockquote { @apply --shadow-elevation-12dp; }
-      :host[depth="7"] blockquote { @apply --shadow-elevation-16dp; }
     </style>
     <blockquote class$="[[generateClass(decorate, outset, color, textColor)]]">
-        [[quote]]
+      <slot></slot>
       <cite class$="[[textColor]]">
         [[citation]]
       </cite>
@@ -78,12 +76,6 @@ A structured blockquote element
         A11yBehaviors.A11y,
       ],
       properties: {
-        /**
-         * quote to be presented
-         */
-        quote: {
-          type: String,
-        },
         /**
          * Source being cited
          */
@@ -150,9 +142,9 @@ A structured blockquote element
       attached: function() {
         // Establish hax properties if they exist
         let props = {
-          'canScale': false,
-          'canPosition': false,
-          'canEditSource': false,
+          'canScale': true,
+          'canPosition': true,
+          'canEditSource': true,
           'gizmo': {
             'title': 'Fancy quote',
             'description': 'Presents a famous quote with additional design options.',
@@ -199,7 +191,7 @@ A structured blockquote element
             ],
             'configure': [
               {
-                'property': 'quote',
+                'slot': '',
                 'title': 'Quote',
                 'description': 'Quoted text',
                 'inputMethod': 'textfield',
@@ -249,13 +241,12 @@ A structured blockquote element
                   '2': 'Level 2',
                   '3': 'Level 3',
                   '4': 'Level 4',
-                  '5': 'Level 5',
-                  '6': 'Level 6',
-                  '7': 'Level 7'
+                  '5': 'Level 5'
                 },
               }
             ],
-            'advanced': []
+            'advanced': [
+            ]
           }
         };
         this.setHaxProperties(props);
