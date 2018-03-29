@@ -56,6 +56,20 @@ A structured blockquote element
       :host[depth="3"] blockquote { @apply --shadow-elevation-4dp; }
       :host[depth="4"] blockquote { @apply --shadow-elevation-6dp; }
       :host[depth="5"] blockquote { @apply --shadow-elevation-8dp; }
+
+
+      /* BEGIN HYPERCARDIFY, thanks @realdlnorman */
+      :host[hypercard] ::slotted(*) {
+        -webkit-filter: grayscale(1) contrast(300%);
+        filter: grayscale(1) contrast(300%);
+        font-family: Chikarego, Helvetica, sans-serif;
+        transition: all .6s ease;
+      }
+      /* Disable grayscale on hover */
+      :host[hypercard] ::slotted(*):hover {
+        -webkit-filter: grayscale(0);
+        filter: none;
+      }
     </style>
     <blockquote class$="[[generateClass(decorate, outset, color, textColor)]]">
       <slot></slot>
@@ -135,6 +149,31 @@ A structured blockquote element
           type: String,
           computed: '_computeColorClass(textColorCode)',
         },
+        /**
+         * Funny 1900s vision.
+         */
+        hypercard: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false,
+          observer: '_applyChikarego',
+        }
+      },
+      /**
+       * Notice hypercard activated so load the font
+       */
+      _applyChikarego: function(newValue, oldValue) {
+        if (newValue === true) {
+          let style=document.createElement('style');
+          style.innerHTML = `@font-face {
+            font-family: 'Chikarego';
+            src: url('` + this.resolveUrl('chikarego2-webfont.woff2') + `') format('woff2'),
+                 url('` + this.resolveUrl('chikarego2-webfont.woff') + `') format('woff');
+            font-weight: normal;
+            font-style: normal;
+          }`;
+          document.head.appendChild(style);
+        }
       },
       /**
        * Attached.
